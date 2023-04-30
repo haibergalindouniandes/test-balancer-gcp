@@ -52,6 +52,22 @@ class HealthCheckResource(Resource):
         else:
             remoteIp = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
         
+        return {"host_name": hostName, "host_ip": hostIp, "remote_ip": remoteIp, "timestamp": timestamp}
+
+# Clase que retorna el estado del servicio
+class RegistryRequestResource(Resource):
+    def get(self):
+        hostIp = socket.gethostbyname(socket.gethostname())
+        hostName = socket.gethostname()
+        timestamp = datetime.now()
+        remoteIp = None
+        if request.remote_addr:
+            remoteIp = request.remote_addr
+        elif request.environ['REMOTE_ADDR']:
+            remoteIp = request.remote_addr
+        else:
+            remoteIp = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+        
         registry = Auditory(host_name=hostName, host_ip=hostIp, remote_ip=remoteIp)
         db.session.add(registry)
         db.session.commit()
