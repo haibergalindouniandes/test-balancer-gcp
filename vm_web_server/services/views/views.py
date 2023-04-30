@@ -52,7 +52,7 @@ class HealthCheckResource(Resource):
         else:
             remoteIp = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
         
-        return {"host_name": hostName, "host_ip": hostIp, "remote_ip": remoteIp, "timestamp": timestamp}
+        return {"host_name": hostName, "host_ip": hostIp, "remote_ip": remoteIp, "timestamp": str(timestamp)}
 
 # Clase que retorna el estado del servicio
 class RegistryRequestResource(Resource):
