@@ -3,7 +3,7 @@ from flask_cors import CORS
 from celery import Celery
 from flask_restful import Api
 from flask import Flask, send_from_directory, jsonify
-from views import AuthLogInResource, AuthSignUpResource, ConvertTaskFileResource, ConvertTaskFileByIdResource, FileDownloadResource, HealthCheckResource, RegistryRequestResource
+from views import AuthLogInResource, AuthSignUpResource, ConvertTaskFileResource, ConvertTaskFileByIdResource, FileDownloadResource, HealthCheckResource, RegistryRequestResource, UploadGCPFileResource
 from models import db
 from flask_jwt_extended import JWTManager
 
@@ -35,6 +35,7 @@ api = Api(app)
 # Agregamos los recursos
 api.add_resource(HealthCheckResource, "/")
 api.add_resource(RegistryRequestResource, "/registry")
+api.add_resource(UploadGCPFileResource, "/upload")
 api.add_resource(AuthSignUpResource, "/api/auth/signup")
 api.add_resource(AuthLogInResource, "/api/auth/login")
 api.add_resource(ConvertTaskFileResource, "/api/tasks")

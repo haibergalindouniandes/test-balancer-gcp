@@ -7,10 +7,13 @@ import traceback
 from datetime import datetime
 from celery import Celery
 from flask import request, send_file
+from flask.json import jsonify
 from models import db, User, UserSchema, Task, TaskSchema, Auditory, AuditorySchema
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from werkzeug.utils import secure_filename
+
+from google.cloud import storage
 
 # Constantes
 ALLOWED_EXTENSIONS = os.getenv("ALLOWED_EXTENSIONS", default="zip,7z,tgz,tbz")
@@ -72,6 +75,23 @@ class RegistryRequestResource(Resource):
         db.session.add(registry)
         db.session.commit()
         return auditory_schema.dump(registry)
+
+class UploadGCPFileResource(Resource):
+    def post(self):
+        try:
+            file = request.files['fileName']
+            # Authenticate ourselves using the service account private key
+            path_to_private_key = './dauntless-bay-384421-56876ce150d4.json'
+            client = storage.Client.from_service_account_json(json_credentials_path=path_to_private_key)
+            # Connect with bucket
+            bucket = storage.Bucket(client, 'bucket-converter-app')
+            blob = bucket.blob(file.filename)
+            blob.upload_from_string(file.read(), content_type=file.content_type)
+            return {"msg": "Archivo subido correctamente"}
+        except Exception as e:
+            traceback.print_stack()
+            return {"msg": str(e)}, 500
+        
 
 # Clase que contiene la logica para solicitar el token
 class AuthLogInResource(Resource):
